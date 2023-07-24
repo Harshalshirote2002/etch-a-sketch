@@ -8,20 +8,21 @@ const buttons = Array.from(document.querySelectorAll('button'));
 const gridSizeSlider = document.getElementById('gridSizeSlider');
 const sizeValue = document.querySelector('.sizeValue');
 
+let isPainting = false;
 
 gridSizeSlider.addEventListener('input', function() {
     const gridSize = this.value;
     setupGrid(gridSize);
-    sizeValue.textContent = `${gridSize} x ${gridSize}`;
+    sizeValue.textContent = `${gridSize} X ${gridSize}`;
 });
 
 
 currentMode = DEFAULT_MODE;
 
 function changeColor(e){
-    if (currentMode=="colorMode"){
+    if (currentMode=="colorMode" && isPainting==true){
         e.target.classList.add('colored-grid');
-    }else if(currentMode=="eraseMode"){
+    }else if(currentMode=="eraseMode" && isPainting==true){
         if(Array.from(e.target.classList).includes("colored-grid")) e.target.classList.remove('colored-grid');
     }
 }
@@ -37,8 +38,9 @@ function setupGrid(size, mode) {
     for (let i = 0; i < size * size; i++) {
         const cell = document.createElement('div');
         cell.classList.add('grid-cell');
-        cell.addEventListener('mousedown', changeColor);
+        cell.addEventListener('mousedown', () => {isPainting=true;});
         cell.addEventListener('mousemove', changeColor);
+        cell.addEventListener('mouseup', () => {isPainting=false;});
         gridContainer.appendChild(cell);
     }
     if(mode == "colorMode"){ 
@@ -72,3 +74,7 @@ eraser.addEventListener('click', erase);
 setupGrid(DEFAULT_SIZE, DEFAULT_MODE);
 
 clearButton.addEventListener('click', () => setupGrid(DEFAULT_SIZE, "someOther"));
+
+
+
+
