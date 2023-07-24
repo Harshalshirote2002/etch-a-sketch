@@ -26,7 +26,7 @@ function changeColor(e){
     }
 }
 
-function setupGrid(size) {
+function setupGrid(size, mode) {
     gridContainer.innerHTML = '';
 
     gridContainer.style.display = 'grid';
@@ -40,6 +40,9 @@ function setupGrid(size) {
         cell.addEventListener('mousedown', changeColor);
         cell.addEventListener('mousemove', changeColor);
         gridContainer.appendChild(cell);
+    }
+    if(mode == "colorMode"){ 
+        colorBtn.classList.add('colored-button');
     }
 }
 
@@ -66,6 +69,6 @@ eraser.addEventListener('click', erase);
 
 
 
-setupGrid(DEFAULT_SIZE);
+setupGrid(DEFAULT_SIZE, DEFAULT_MODE);
 
-clearButton.addEventListener('click', () => setupGrid(DEFAULT_SIZE));
+clearButton.addEventListener('click', () => setupGrid(DEFAULT_SIZE, "someOther"));
