@@ -1,40 +1,66 @@
 const DEFAULT_SIZE = 16;
 const DEFAULT_MODE = "colorMode";
+DEFAULT_COLOR = 'black';
 const colorBtn = document.querySelector('.colorBtn');
 const gridContainer = document.getElementById('grid-container');
 const clearButton = document.querySelector('.clearBtn');
+const rainbowBtn = document.querySelector('.rainbowBtn');
 const eraser = document.querySelector('.eraserBtn');
 const buttons = Array.from(document.querySelectorAll('button'));
 const gridSizeSlider = document.getElementById('gridSizeSlider');
 const sizeValue = document.querySelector('.sizeValue');
+const colorPicker = document.querySelector('#colorPicker');
+let isPainting=false;
+let size =  DEFAULT_SIZE;
+let colorValue = DEFAULT_COLOR;
+let currentMode = DEFAULT_MODE;
 
-let isPainting = false;
+colorBtn.classList.add('colored-button');
+
+colorPicker.addEventListener('input', function() {
+    colorValue = this.value;
+});
 
 gridSizeSlider.addEventListener('input', function() {
-    const gridSize = this.value;
-    setupGrid(gridSize);
-    sizeValue.textContent = `${gridSize} X ${gridSize}`;
+    size = this.value;
+    setupGrid(size, gridContainer);
+    sizeValue.textContent = `${size} X ${size}`;
 });
 
 
-currentMode = DEFAULT_MODE;
+const colors = [
+    '#9400D3', // Violet
+    '#4B0082', // Indigo
+    '#0000FF', // Blue
+    '#008000', // Green
+    '#FFFF00', // Yellow
+    '#FFA500', // Orange
+    '#FF0000'  // Red
+  ];
+  
 
-function changeColor(e){
+  function getRandomColor() {
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
+
+
+changeColor = function(e){
     if (currentMode=="colorMode" && isPainting==true){
-        e.target.classList.add('colored-grid');
+        e.target.style.backgroundColor = colorValue;
     }else if(currentMode=="eraseMode" && isPainting==true){
-        if(Array.from(e.target.classList).includes("colored-grid")) e.target.classList.remove('colored-grid');
+        e.target.style.backgroundColor = 'white';
+    }else if(currentMode=="rainbowMode" && isPainting==true){
+        e.target.style.backgroundColor = getRandomColor();
     }
 }
 
-function setupGrid(size, mode) {
+function setupGrid(size, gridContainer) {
     gridContainer.innerHTML = '';
 
     gridContainer.style.display = 'grid';
     gridContainer.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
     gridContainer.style.gridTemplateRows = `repeat(${size}, 1fr)`;
 
-    // Create cells and append them to the grid container
     for (let i = 0; i < size * size; i++) {
         const cell = document.createElement('div');
         cell.classList.add('grid-cell');
@@ -43,9 +69,7 @@ function setupGrid(size, mode) {
         cell.addEventListener('mouseup', () => {isPainting=false;});
         gridContainer.appendChild(cell);
     }
-    if(mode == "colorMode"){ 
-        colorBtn.classList.add('colored-button');
-    }
+    return gridContainer
 }
 
 
@@ -57,7 +81,13 @@ function erase(e){
     e.target.classList.add('colored-button');
 }
 
-
+function randomizeColor(e){
+    currentMode='rainbowMode';
+    buttons.forEach(button =>  { if( Array.from(button.classList).includes('colored-button')){
+        button.classList.remove('colored-button');
+    }});
+    e.target.classList.add('colored-button');
+}
 
 colorBtn.addEventListener('click', (e) => {
     currentMode="colorMode";
@@ -67,13 +97,13 @@ colorBtn.addEventListener('click', (e) => {
     e.target.classList.add('colored-button');
 });
 
+
 eraser.addEventListener('click', erase);
+rainbowBtn.addEventListener('click', randomizeColor);
+clearButton.addEventListener('click', () => setupGrid(size, gridContainer));
 
 
-
-setupGrid(DEFAULT_SIZE, DEFAULT_MODE);
-
-clearButton.addEventListener('click', () => setupGrid(DEFAULT_SIZE, "someOther"));
+setupGrid(size, gridContainer);
 
 
 
